@@ -1,33 +1,28 @@
-// server.ts
-import express, { Application, Request, Response } from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-
-// Importar rotas
-import router from './routes/index';
-
-const app: Application = express();
-const port = 5000;
-
-app.use(cors());
-app.use(express.json());
-
-// Conectar ao MongoDB local
-mongoose.connect('mongodb://localhost:27017/mydatabase')
-  .then(() => {
-  console.log('Conectado ao MongoDB');
-})
-.catch((err: Error) => {
-  console.error('Erro ao conectar ao MongoDB', err);
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://CaTest:RHmVoab4yyjtYUdI@pao-com-ovo.kiubl.mongodb.net/?retryWrites=true&w=majority&appName=pao-com-ovo";
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
 });
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
+}
+run().catch(console.dir);
 
-// Usar as rotas de itens
-app.use('/api', router);
-
-app.get('/', (req: Request, res: Response) => {
-  res.send('API está funcionando');
-});
-
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
-});
+/*
+CaTest
+RHmVoab4yyjtYUdI
+*/
