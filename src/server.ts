@@ -1,6 +1,10 @@
+const express = require('express');
 const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://CaTest:RHmVoab4yyjtYUdI@pao-com-ovo.kiubl.mongodb.net/?retryWrites=true&w=majority&appName=pao-com-ovo";
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+
+const app = express();
+const port = 3000;
+
+const uri = "mongodb+srv://CaTest:RHmVoab4yyjtYUdI@pao-com-ovo.kiubl.mongodb.net/?retryWrites=true&w=majority&appName=pao-com-ovo"; 
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -8,19 +12,38 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
-async function run() {
+
+async function connectToDatabase() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
+    console.log("Connected to MongoDB!");
+    return client.db("pao_com_ovo");
+  } catch (error) {
+    console.error('Erro ao conectar ao MongoDB:', error);
+    throw error;
   }
 }
-run().catch(console.dir);
+
+// Rota para buscar dados da coleção 'equipments'
+app.get('/equipments', async (req, res) => {
+  try {
+    const database = await connectToDatabase();
+    const collection = database.collection('equipments');
+    const equipments = await collection.find({}).toArray();
+    res.status(200).json(equipments);
+    console.log('fa' + equipments)
+  } catch (error) {
+    console.error('Erro ao buscar dados da coleção equipments:', error);
+    res.status(500).json({ error: 'Erro ao buscar dados da coleção equipments' });
+  } finally {
+    await client.close();
+  }
+});
+
+// Iniciar o servidor Express na porta 3000
+app.listen(port, () => {
+  console.log(`Servidor Express rodando em http://localhost:${port}`);
+});
 
 /*
 CaTest
