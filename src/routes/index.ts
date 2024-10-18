@@ -1,31 +1,10 @@
 // routes/itemRoutes.ts
-import { Router, Request, Response } from 'express';
-import Item from '../models/index';
-import { addItem, getItems } from '../controllers/index';
+import { Router } from 'express';
+import equipmentRoutes from './equipments-routes';
 
-const router: Router = Router();
+const routes = Router();
 
-// Rota para adicionar um item
-router.post('/add-item', addItem, async (req: Request, res: Response) => {
-  const { name, price } = req.body;
+routes.use('/equipment', equipmentRoutes)
 
-  try {
-    const newItem = new Item({ name, price });
-    await newItem.save();
-    res.json(newItem);
-  } catch (err) {
-    res.status(500).json({ error: (err as Error).message });
-  }
-});
+export default routes
 
-// Rota para listar todos os itens
-router.get('/items', getItems, async (req: Request, res: Response) => {
-  try {
-    const items = await Item.find();
-    res.json(items);
-  } catch (err) {
-    res.status(500).json({ error: (err as Error).message });
-  }
-});
-
-export default router;

@@ -1,33 +1,61 @@
-// server.ts
-import express, { Application, Request, Response } from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
+import { Request, Response } from 'express'
+import bodyParser from 'body-parser'
+import cors from 'cors'
+import routes from './routes'
 
-// Importar rotas
-import router from './routes/index';
+const express = require('express')
+const { MongoClient, ServerApiVersion } = require('mongodb')
 
-const app: Application = express();
-const port = 5000;
+const app = express()
+const port = 3000
 
-app.use(cors());
-app.use(express.json());
-
-// Conectar ao MongoDB local
-mongoose.connect('mongodb://localhost:27017/mydatabase')
-  .then(() => {
-  console.log('Conectado ao MongoDB');
+const uri = "mongodb+srv://CaTest:RHmVoab4yyjtYUdI@pao-com-ovo.kiubl.mongodb.net/?retryWrites=true&w=majority&appName=pao-com-ovo" 
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
 })
-.catch((err: Error) => {
-  console.error('Erro ao conectar ao MongoDB', err);
-});
 
-// Usar as rotas de itens
-app.use('/api', router);
+export async function connectToDatabase() {
+  try {
+    await client.connect()
+    //console.log("Connected to MongoDB!")
+    return client.db("pao_com_ovo")
+  } catch (error) {
+    console.error('Erro ao conectar ao MongoDB:', error)
+    throw error
+  }
+}
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('API está funcionando');
-});
+// Rota para buscar dados da coleção 'equipments'
+/*app.get('/equipments', async (req: Request, res: Response) => {
+  try {
+    const database = await connectToDatabase()
+    const collection = database.collection('equipments')
+    const equipments = await collection.find({}).toArray()
+    res.status(200).json(equipments)
+    console.log('fa' + equipments)
+  } catch (error) {
+    console.error('Erro ao buscar dados da coleção equipments:', error)
+    res.status(500).json({ error: 'Erro ao buscar dados da coleção equipments' })
+  } finally {
+    await client.close()
+  }
+})*/
+
+app.use(cors())
+app.use(bodyParser.json({ limit: '50mb' }))
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
+app.use(routes)
+
 
 app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
-});
+  console.log(`Servidor Express rodando em http://localhost:${port}`)
+})
+
+/*
+CaTest
+RHmVoab4yyjtYUdI
+*/
