@@ -1,4 +1,7 @@
-import { Request, Response } from 'express';
+import { Request, Response } from 'express'
+import bodyParser from 'body-parser'
+import cors from 'cors'
+import routes from './routes'
 
 const express = require('express')
 const { MongoClient, ServerApiVersion } = require('mongodb')
@@ -15,10 +18,10 @@ const client = new MongoClient(uri, {
   }
 })
 
-async function connectToDatabase() {
+export async function connectToDatabase() {
   try {
     await client.connect()
-    console.log("Connected to MongoDB!")
+    //console.log("Connected to MongoDB!")
     return client.db("pao_com_ovo")
   } catch (error) {
     console.error('Erro ao conectar ao MongoDB:', error)
@@ -27,7 +30,7 @@ async function connectToDatabase() {
 }
 
 // Rota para buscar dados da coleção 'equipments'
-app.get('/equipments', async (req: Request, res: Response) => {
+/*app.get('/equipments', async (req: Request, res: Response) => {
   try {
     const database = await connectToDatabase()
     const collection = database.collection('equipments')
@@ -40,9 +43,14 @@ app.get('/equipments', async (req: Request, res: Response) => {
   } finally {
     await client.close()
   }
-})
+})*/
 
-// Iniciar o servidor Express na porta 3000
+app.use(cors())
+app.use(bodyParser.json({ limit: '50mb' }))
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
+app.use(routes)
+
+
 app.listen(port, () => {
   console.log(`Servidor Express rodando em http://localhost:${port}`)
 })
