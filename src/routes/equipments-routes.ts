@@ -3,11 +3,10 @@ import EquipmentsController from '../controllers/equipments-controller'
 
 const equipmentRoutes = Router()
 
-equipmentRoutes.get('/', EquipmentsController.getEquipments)
+equipmentRoutes.get('/', EquipmentsController.getEquipment)
 equipmentRoutes.get('/:id', EquipmentsController.getEquipmentById)
-/*clienteRoutes.get('/get', ClienteController.index)
-clienteRoutes.get('/get/:id', ClienteController.show)
-clienteRoutes.delete('/delete/:id',ClienteController.delete)
-clienteRoutes.put('/update/:id',ClienteController.update)*/
+equipmentRoutes.post('/', EquipmentsController.createEquipment)
+equipmentRoutes.put('/:id', EquipmentsController.updateEquipment)
+equipmentRoutes.delete('/:id', EquipmentsController.removeEquipment)
 
 export default equipmentRoutes
