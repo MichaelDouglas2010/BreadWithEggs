@@ -33,6 +33,23 @@ export default class UserController {
     }
   }
 
+  static async getUserByEmail(req: Request, res: Response) {
+    try {
+      const { em } = req.params
+      const database = await connectToDatabase()
+      const collection = database.collection('users')
+      const user = await collection.findOne({ email: em })
+      if (user) {
+        res.status(200).json(user)
+      } else {
+        res.status(404).json({ error: 'Usuário não encontrado' })
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados da coleção users:', error)
+      res.status(500).json({ error: 'Erro ao buscar dados da coleção users' })
+    }
+  }
+
   static async createUser(req: Request, res: Response) {
     try {
       const { name, email, password, team } = req.body
