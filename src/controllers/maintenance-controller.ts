@@ -33,6 +33,24 @@ export default class MaintenanceController {
     }
   }
 
+  static async getMaintenanceByEquipmentId(req: Request, res: Response) {
+    try {
+      const { id } = req.params
+      const database = await connectToDatabase()
+      const collection = database.collection('maintenances')
+      const maintenance = await collection.find({ equipmentId: id }).toArray()
+      if (maintenance) {
+        res.status(200).json(maintenance)
+        console.log(maintenance)
+      } else {
+        res.status(404).json({ error: 'Manutenção não encontrada' })
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados da coleção maintenances:', error)
+      res.status(500).json({ error: 'Erro ao buscar dados da coleção maintenances' })
+    }
+  }
+
   static async createMaintenance(req: Request, res: Response) {
     try {
       const { equipmentId, description, cost, date, performedBy } = req.body

@@ -33,6 +33,23 @@ export default class UsageController {
     }
   }
 
+  static async getUsageRecordListById(req: Request, res: Response) {
+    try {
+      const { id } = req.params
+      const database = await connectToDatabase()
+      const collection = database.collection('usageRecords')
+      const usageRecord = await collection.find({ equipmentId: id }).sort({ startTime: -1 }).limit(10).toArray()
+      if (usageRecord) {
+        res.status(200).json(usageRecord)
+      } else {
+        res.status(404).json({ error: 'Nenhum registro de uso encontrado' })
+      }
+    } catch (error) {
+      console.error('Erro ao buscar dados da coleção usageRecords:', error)
+      res.status(500).json({ error: 'Erro ao buscar dados da coleção usageRecords' })
+    }
+  }
+
   static async createUsageRecord(req: Request, res: Response) {
     try {
       const { equipmentId, userId, activity, startTime, endTime, totalHours } = req.body
@@ -43,9 +60,10 @@ export default class UsageController {
         activity,
         startTime,
         endTime,
-        totalHours,
+        totalHours: parseFloat(totalHours),
         createdAt: new Date().toISOString()
       }
+
 
       const database = await connectToDatabase()
       const collection = database.collection('usageRecords')

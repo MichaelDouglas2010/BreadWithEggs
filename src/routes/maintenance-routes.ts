@@ -5,6 +5,7 @@ const maintenanceRoutes = Router()
 
 maintenanceRoutes.get('/', MaintenanceController.getMaintenance)
 maintenanceRoutes.get('/:id', MaintenanceController.getMaintenanceById)
+maintenanceRoutes.get('/eqp/:id', MaintenanceController.getMaintenanceByEquipmentId)
 maintenanceRoutes.post('/', MaintenanceController.createMaintenance)
 maintenanceRoutes.put('/:id', MaintenanceController.updateMaintenance)
 maintenanceRoutes.delete('/:id', MaintenanceController.removeMaintenance)
