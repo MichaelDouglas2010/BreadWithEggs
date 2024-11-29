@@ -43,9 +43,10 @@ export default class UsageController {
         activity,
         startTime,
         endTime,
-        totalHours,
+        totalHours: parseFloat(totalHours),
         createdAt: new Date().toISOString()
       }
+
 
       const database = await connectToDatabase()
       const collection = database.collection('usageRecords')
