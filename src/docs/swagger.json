@@ -1,0 +1,216 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Equipment Management API",
+    "version": "1.0.0",
+    "description": "API para gerenciar equipamentos, manutenções e registros de uso."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Servidor local"
+    }
+  ],
+  "paths": {
+    "/about": {
+      "get": {
+        "summary": "Obter informações sobre a aplicação",
+        "responses": {
+          "200": {
+            "description": "Informações sobre a aplicação retornadas com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao buscar dados de About"
+          }
+        }
+      }
+    },
+    "/equipments": {
+      "get": {
+        "summary": "Listar equipamentos",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Filtrar equipamentos por descrição ou ID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lista de equipamentos",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Equipment"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao buscar dados da coleção equipments"
+          }
+        }
+      },
+      "post": {
+        "summary": "Criar um novo equipamento",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Equipment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Equipamento criado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipment"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Erro ao criar novo equipamento"
+          }
+        }
+      }
+    },
+    "/equipments/{id}": {
+      "get": {
+        "summary": "Obter detalhes de um equipamento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do equipamento",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Equipamento encontrado",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Equipment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Equipamento não encontrado"
+          },
+          "500": {
+            "description": "Erro ao buscar dados da coleção equipments"
+          }
+        }
+      },
+      "put": {
+        "summary": "Atualizar um equipamento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do equipamento",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Equipment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Equipamento atualizado com sucesso"
+          },
+          "404": {
+            "description": "Equipamento não encontrado"
+          },
+          "500": {
+            "description": "Erro ao atualizar equipamento"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remover um equipamento",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "ID do equipamento",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Equipamento removido com sucesso"
+          },
+          "404": {
+            "description": "Equipamento não encontrado"
+          },
+          "500": {
+            "description": "Erro ao remover equipamento"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Equipment": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string"
+          },
+          "marca": {
+            "type": "string"
+          },
+          "dataEntrada": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "type": "string"
+          },
+          "qrCodeData": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
