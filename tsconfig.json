@@ -2,7 +2,7 @@
   "compilerOptions": {
     /* Language and Environment */
     "target": "es2016",                    
-    
+
     /* Modules */
     "module": "commonjs",
     "moduleResolution": "node",              /* Ensures TypeScript looks up modules in a Node.js style */
@@ -14,8 +14,16 @@
     /* Type Checking */
     "strict": true,
     "skipLibCheck": true,                    /* Speeds up compilation by skipping type checks on library files */
-    
+
+    /* JSON and Other Configurations */
+    "resolveJsonModule": true,               /* Allows importing .json files */
+
     /* Other configurations */
-    "forceConsistentCasingInFileNames": true /* Prevents issues with imports on case-sensitive systems */
-  }
+    "forceConsistentCasingInFileNames": true, /* Prevents issues with imports on case-sensitive systems */
+    
+    "outDir": "./dist",                      /* Output directory for compiled files */
+    "baseUrl": "./",                         /* Base directory for resolving non-relative module imports */
+  },
+  "include": ["src/**/*"],                    /* Include all TypeScript files in the src directory */
+  "exclude": ["node_modules", "dist"]         /* Exclude node_modules and dist directories */
 }
