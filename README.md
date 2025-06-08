@@ -1,9 +1,9 @@
-###**Sobre o Projeto**
+### **Sobre o Projeto**
 
 - Projeto de Graduação da Faculdade de Tecnologia de Indaiatuba Dr. Archimedes Lammoglia.
 - 6º semestre de Análise e Desenvolvimento de Sistemas
 
-###**Integrantes:**
+### **Integrantes:**
 - Diego Cruz
 - Michael Douglas
 
