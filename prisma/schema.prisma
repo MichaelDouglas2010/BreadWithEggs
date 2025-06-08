@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // ou "mysql", "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model UsageRecord {
+  id           String   @id @default(uuid())
+  equipmentId  String
+  userId       String
+  activity     String
+  startTime    DateTime
+  endTime      DateTime
+  totalHours   Float
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  assinatura   String?  // opcional (nullável)
+  dataRetorno  DateTime?
+  dataSaida    DateTime?
+  observacoes  String?
+  retiradoPor  String?
+  status       String
+}

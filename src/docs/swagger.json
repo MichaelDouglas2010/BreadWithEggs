@@ -1,0 +1,21 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Bread With Eggs API",
+      "version": "1.0.0",
+      "description": "Documentação da API do TCC"
+    },
+    "paths": {
+      "/": {
+        "get": {
+          "summary": "Rota de teste",
+          "responses": {
+            "200": {
+              "description": "Retorna um Hello World"
+            }
+          }
+        }
+      }
+    }
+  }
+  

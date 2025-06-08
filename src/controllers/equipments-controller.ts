@@ -105,7 +105,37 @@ export default class EquipmentsController {
       res.status(500).json({ error: 'Erro ao atualizar equipamento' });
     }
   }
-
+  static async updateStatus(req: Request, res: Response) {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+  
+      if (!status) {
+        return res.status(400).json({ error: 'O campo status é obrigatório' });
+      }
+  
+      const updatedData = { status }; // Apenas o status será atualizado
+  
+      const database = await connectToDatabase();
+      const collection = database.collection('equipments');
+      
+      // Atualiza o status do equipamento com o id fornecido
+      const result = await collection.updateOne(
+        { _id: new ObjectId(id) },
+        { $set: updatedData }
+      );
+  
+      if (result.matchedCount > 0) {
+        res.status(200).json({ message: 'Status do equipamento atualizado com sucesso' });
+      } else {
+        res.status(404).json({ error: 'Equipamento não encontrado' });
+      }
+    } catch (error) {
+      console.error('Erro ao atualizar o status do equipamento:', error);
+      res.status(500).json({ error: 'Erro ao atualizar o status do equipamento' });
+    }
+  }
+  
   static async removeEquipment(req: Request, res: Response) {
     try {
       const { id } = req.params;
