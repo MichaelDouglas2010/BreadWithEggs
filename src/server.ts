@@ -10,7 +10,7 @@ const app = express();
 const port = 3000;
 
 // String de conexão direta com o MongoDB
-const uri = 'mongodb+srv://Dysdale:eunaosei123pao-com-ovo.kiubl.mongodb.net/?retryWrites=true&w=majority&appName=pao-com';
+const uri = 'mongodb+srv://Dysdale:eunaosei123@pao-com-ovo.kiubl.mongodb.net/?retryWrites=true&w=majority&appName=pao-com';
 
 // Instanciando o cliente MongoDB
 const client = new MongoClient(uri, {
