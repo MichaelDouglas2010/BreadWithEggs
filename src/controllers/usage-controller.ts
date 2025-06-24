@@ -86,7 +86,7 @@ export default class UsageController {
     try {
       const { retiradoPor, observacoes, equipmentId, description, marca, userId, activity, startTime, endTime, totalHours, assinatura } = req.body;
 
-      if (!equipmentId || !userId || !activity || !startTime || !totalHours || !assinatura) {
+      if (!equipmentId || !userId || !activity || !startTime || !assinatura) {
         return res.status(400).json({ error: 'Campos obrigatórios faltando' });
       }
 
@@ -131,7 +131,7 @@ export default class UsageController {
         return res.status(400).json({ error: 'ID inválido' });
       }
 
-      if (!equipmentId || !userId || !activity || !startTime || !endTime || !totalHours) {
+      if (!equipmentId || !userId || !activity || !startTime || !assinatura) {
         return res.status(400).json({ error: 'Campos obrigatórios faltando' });
       }
 
@@ -228,36 +228,56 @@ export default class UsageController {
     }
   }
 
-  // Função para marcar a devolução de um equipamento
+  // SUBSTITUA TODA A SUA FUNÇÃO 'returnEquipment' POR ESTA
   static async returnEquipment(req: Request, res: Response) {
     try {
-      const { id } = req.params;
-      const { endTime } = req.body; // pega o endTime do corpo da requisição
+      const { id } = req.params; // Este é o ID do EQUIPAMENTO
+      const { endTime } = req.body;
+
+      // Validação básica do ID
+      if (!ObjectId.isValid(id)) {
+        return res.status(400).json({ error: 'ID de equipamento inválido' });
+      }
+
       const database = await connectToDatabase();
       const collection = database.collection('usageRecords');
-  
-      // Busca o último registro de uso do equipamento com o ID como string
-      const lastUsageRecord = await collection.find({ equipmentId: id })
-        .sort({ startTime: -1 })
-        .limit(1)
-        .toArray();
-  
-      if (lastUsageRecord.length > 0) {
-        // Usa o endTime enviado, ou o horário atual se não for enviado
-        const updatedEndTime = endTime || new Date().toISOString();
-  
+
+      // Busca o último registro de uso EM ABERTO (endTime é nulo) para este equipamento
+      const lastUsageRecord = await collection.findOne(
+        { equipmentId: id, endTime: null },
+        { sort: { startTime: -1 } }
+      );
+
+      if (lastUsageRecord) {
+        // Define a data/hora final (usa a do body ou a do servidor)
+        const finalEndTime = endTime ? new Date(endTime) : new Date();
+        const startTime = new Date(lastUsageRecord.startTime);
+
+        // --- LÓGICA DE CÁLCULO ---
+        // Calcula a diferença em milissegundos
+        const diffInMs = finalEndTime.getTime() - startTime.getTime();
+        // Converte milissegundos para horas
+        const diffInHours = diffInMs / (1000 * 60 * 60);
+
+        // Atualiza o registro com o endTime E o totalHours calculado
         const result = await collection.updateOne(
-          { _id: lastUsageRecord[0]._id },
-          { $set: { endTime: updatedEndTime } }
+          { _id: lastUsageRecord._id },
+          { 
+            $set: { 
+              endTime: finalEndTime.toISOString(),
+              totalHours: parseFloat(diffInHours.toFixed(2)) // Salva com 2 casas decimais
+            } 
+          }
         );
-  
+
         if (result.modifiedCount > 0) {
           res.status(200).json({ message: 'Equipamento devolvido com sucesso' });
         } else {
-          res.status(500).json({ error: 'Erro ao atualizar o registro de devolução do equipamento' });
+          res.status(500).json({ error: 'Erro ao atualizar o registro de devolução' });
         }
+
       } else {
-        res.status(404).json({ error: 'Nenhum registro de uso encontrado para este equipamento' });
+        res.status(404).json({ error: 'Nenhum registro de uso em aberto encontrado para este equipamento' });
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
