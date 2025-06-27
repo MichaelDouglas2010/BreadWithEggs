@@ -6,29 +6,44 @@ export default class EquipmentsController {
 
   static async getEquipment(req: Request, res: Response) {
     try {
-      const searchQuery = req.query.search?.toString(); // Modificado para pegar o parâmetro de busca correto
+      const searchQuery = req.query.search?.toString();
       const database = await connectToDatabase();
       const collection = database.collection('equipments');
-
       let equipments;
 
-      if (searchQuery && ObjectId.isValid(searchQuery)) {
-        // Se for um ObjectId válido, busca pelo ID
-        equipments = await collection.find({ _id: new ObjectId(searchQuery) }).toArray();
-      } else if (searchQuery) {
-        // Se não é um ObjectId, busca por descrição usando regex
-        equipments = await collection.find({ description: { $regex: searchQuery, $options: 'i' } }).toArray();
-      } else {
-        // Sem query, retorna todos os equipamentos
+      if (!searchQuery) {
+        // Se não houver uma query de busca, retorna todos os equipamentos.
         equipments = await collection.find({}).toArray();
+      } else {
+        // Se houver uma query, constrói uma busca versátil.
+        const queryConditions = [];
+
+        // Condição 1: Verifica se a busca pode ser um ID válido do MongoDB.
+        if (ObjectId.isValid(searchQuery)) {
+            queryConditions.push({ _id: new ObjectId(searchQuery) });
+        }
+
+        // Condição 2: Busca por descrição (case-insensitive).
+        queryConditions.push({ description: { $regex: searchQuery, $options: 'i' } });
+
+        // Condição 3: Busca por marca (case-insensitive).
+        queryConditions.push({ marca: { $regex: searchQuery, $options: 'i' } });
+        
+        // Condição 4: Busca por correspondência exata do QR Code.
+        queryConditions.push({ qrCodeData: searchQuery });
+
+        // Executa a busca no banco com o operador $or, que encontra documentos
+        // que correspondam a QUALQUER uma das condições acima.
+        equipments = await collection.find({ $or: queryConditions }).toArray();
       }
 
-      // Se não encontrar equipamentos, retorna um array vazio
       if (equipments.length === 0 && searchQuery) {
-        res.status(200).json([]); // Retorna um array vazio se não encontrar
-      } else {
-        res.status(200).json(equipments);
+        // Retorna 404 se a busca não encontrou resultados.
+        return res.status(404).json({ error: 'Nenhum equipamento encontrado com o critério fornecido.' });
       }
+      
+      res.status(200).json(equipments);
+
     } catch (error) {
       console.error('Erro ao buscar dados da coleção equipments:', error);
       res.status(500).json({ error: 'Erro ao buscar dados da coleção equipments' });
